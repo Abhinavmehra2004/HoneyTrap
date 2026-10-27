@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HoneyTrap — Multi-Protocol Honeypot & Threat Intel Network</title>
+    
+    <!-- CSS & Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="/static/style.css">
+    
+    <!-- Scripts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <header class="navbar">
+            <div class="brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-name">HONEYTRAP</span>
+                <span class="brand-tag">INTELLIGENCE SENSOR</span>
+            </div>
+            <div class="nav-status">
+                <div class="status-indicator">
+                    <span class="pulse-dot"></span>
+                    <span id="ws-status-text">CONNECTING</span>
+                </div>
+                <div class="sensor-badge" id="sensor-id">SENSOR: honeytrap-01</div>
+            </div>
+        </header>
+
+        <!-- Stats Metric Cards -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">TOTAL EVENTS</div>
+                <div class="stat-value" id="stat-total-events">0</div>
+                <div class="stat-sub" id="stat-events-today">0 in last 24h</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">ATTACK SESSIONS</div>
+                <div class="stat-value" id="stat-total-sessions">0</div>
+                <div class="stat-sub" id="stat-sessions-today">0 in last 24h</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">UNIQUE ATTACKERS</div>
+                <div class="stat-value" id="stat-unique-ips">0</div>
+                <div class="stat-sub">Distinct IP Addresses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">EXTRACTED IOCS</div>
+                <div class="stat-value" id="stat-total-iocs">0</div>
+                <div class="stat-sub">IPs, URLs, Creds</div>
+            </div>
+        </section>
+
+        <!-- Main Visual Grid: Map & Live Events -->
+        <section class="dashboard-grid">
+            <!-- Left: Attack Map -->
+            <div class="panel map-panel">
+                <div class="panel-header">
+                    <h3>GEOGRAPHIC THREAT MAP</h3>
+                    <span class="panel-badge">GLOBAL SENSORS</span>
+                </div>
+                <div id="threat-map" class="map-container"></div>
+            </div>
+
+            <!-- Right: Real-Time Event Stream -->
+            <div class="panel events-panel">
+                <div class="panel-header">
+                    <h3>REAL-TIME ATTACK STREAM</h3>
+                    <span class="live-pill">LIVE WEBSOCKET</span>
+                </div>
+                <div class="table-scroll">
+                    <table class="data-table" id="events-table">
+                        <thead>
+                            <tr>
+                                <th>TIME</th>
+                                <th>PROTOCOL</th>
+                                <th>ATTACKER IP</th>
+                                <th>ACTION / PAYLOAD</th>
+                                <th>MITRE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-tbody">
+                            <tr class="empty-row"><td colspan="5">Listening for incoming attacks...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secondary Grid: Analytics Charts -->
+        <section class="analytics-grid">
+            <!-- MITRE Heatmap -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>MITRE ATT&CK TECHNIQUES</h3>
+                    <span class="panel-badge">TACTIC MAPPINGS</span>
+                </div>
+                <div class="chart-box">
+                    <canvas id="mitreChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Protocol Breakdown -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>PROTOCOL DISTRIBUTION</h3>
+                    <span class="panel-badge">SURFACE</span>
+                </div>
+                <div class="chart-box">
+                    <canvas id="protocolChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Attackers -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>TOP ADVERSARIES</h3>
+                    <span class="panel-badge">RANKED BY VOLUME</span>
+                </div>
+                <div class="chart-box">
+                    <canvas id="attackersChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Indicators of Compromise & Session Forensics -->
+        <section class="bottom-grid">
+            <!-- IOC Table -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>EXTRACTED INDICATORS OF COMPROMISE (IOCs)</h3>
+                    <input type="text" id="ioc-filter" class="search-input" placeholder="Filter IOCs...">
+                </div>
+                <div class="table-scroll table-sm">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>TYPE</th>
+                                <th>VALUE</th>
+                                <th>CONFIDENCE</th>
+                                <th>FIRST SEEN</th>
+                                <th>LAST SEEN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="iocs-tbody">
+                            <tr class="empty-row"><td colspan="5">No IOCs extracted yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Terminal Session Replay / Detail -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>SESSION FORENSICS & REPLAY</h3>
+                    <span class="panel-badge" id="selected-session-tag">Select an SSH Session</span>
+                </div>
+                <div class="session-replay-container">
+                    <div class="session-picker-bar">
+                        <select id="session-select" class="session-dropdown">
+                            <option value="">-- Choose Session to Replay --</option>
+                        </select>
+                        <button id="btn-refresh-sessions" class="action-btn">Refresh</button>
+                    </div>
+                    <div id="terminal-view" class="terminal-box">
+                        <pre id="terminal-content" class="terminal-text">Select an active or historical SSH session above to review command interactions.</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Threat Intelligence Export Center -->
+        <footer class="export-bar">
+            <div class="export-label">
+                <span>EXPORT THREAT INTELLIGENCE:</span>
+            </div>
+            <div class="export-buttons">
+                <a href="/api/export/stix" download="honeytrap-stix2.json" class="btn btn-stix">STIX 2.1 BUNDLE</a>
+                <a href="/api/export/blocklist?format=iptables" download="honeytrap-iptables.sh" class="btn btn-outline">IPTABLES DROP</a>
+                <a href="/api/export/blocklist?format=nginx" download="honeytrap-nginx.conf" class="btn btn-outline">NGINX DENY</a>
+                <a href="/api/export/blocklist?format=csv" download="honeytrap-attackers.csv" class="btn btn-outline">CSV FORMAT</a>
+                <a href="/api/export/blocklist?format=plaintext" download="honeytrap-ips.txt" class="btn btn-outline">PLAIN IP LIST</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Application Script -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

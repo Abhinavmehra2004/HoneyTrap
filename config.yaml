@@ -1,0 +1,34 @@
+# HoneyTrap Default Configuration File
+sensor_id: "honeytrap-01"
+data_dir: "data"
+db_path: "data/honeytrap.db"
+
+ssh:
+  enabled: true
+  port: 2222
+  host_key_file: "data/ssh_host_key"
+  banner: "SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.4"
+  max_auth_attempts: 6
+
+http:
+  enabled: true
+  port: 8080
+  server_header: "Apache/2.4.54 (Ubuntu)"
+
+ftp:
+  enabled: true
+  port: 2121
+  banner: "220 (vsFTPd 3.0.5)"
+  pasv_port_range:
+    - 30000
+    - 30100
+
+api:
+  host: "0.0.0.0"
+  port: 3000
+  cors_origins:
+    - "*"
+
+geo:
+  enabled: true
+  cache_ttl: 86400

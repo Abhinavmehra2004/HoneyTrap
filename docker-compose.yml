@@ -1,0 +1,28 @@
+services:
+  honeytrap:
+    build: .
+    container_name: honeytrap
+    restart: unless-stopped
+    ports:
+      - "3000:3000"    # Dashboard + API
+      - "2222:2222"    # SSH honeypot
+      - "8080:8080"    # HTTP honeypot
+      - "2121:2121"    # FTP honeypot
+      - "30000-30010:30000-30010"  # FTP PASV ports
+    volumes:
+      - honeytrap-data:/app/data
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - HONEYTRAP_CONFIG=/app/config.yaml
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+
+volumes:
+  honeytrap-data:
