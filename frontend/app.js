@@ -250,8 +250,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const resAttackers = await fetch("/api/attackers?limit=6");
             if (resAttackers.ok) {
                 const attackers = await resAttackers.json();
-                attackersChart.data.labels = attackers.map(a => a.source_ip);
-                attackersChart.data.datasets[0].data = attackers.map(a => a.event_count);
+                attackersChart.data.labels = attackers.map(a => a.source_ip || a.ip || "Unknown");
+                attackersChart.data.datasets[0].data = attackers.map(a => a.event_count || a.count || 0);
                 attackersChart.update();
             }
 

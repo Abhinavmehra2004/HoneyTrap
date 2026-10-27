@@ -19,12 +19,12 @@ BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 
 SAMPLE_ATTACKERS = [
-    {"ip": "185.220.101.5", "country": "Germany", "lat": 52.52, "lon": 13.405, "event_count": 142, "protocols": ["ssh", "http"]},
-    {"ip": "45.154.255.88", "country": "Netherlands", "lat": 52.367, "lon": 4.904, "event_count": 98, "protocols": ["ssh"]},
-    {"ip": "194.26.29.112", "country": "Russia", "lat": 55.755, "lon": 37.617, "event_count": 87, "protocols": ["http", "ftp"]},
-    {"ip": "103.149.28.14", "country": "India", "lat": 28.613, "lon": 77.209, "event_count": 64, "protocols": ["ssh"]},
-    {"ip": "198.51.100.22", "country": "United States", "lat": 37.774, "lon": -122.419, "event_count": 55, "protocols": ["http"]},
-    {"ip": "141.98.11.90", "country": "Bulgaria", "lat": 42.697, "lon": 23.321, "event_count": 41, "protocols": ["ftp"]},
+    {"source_ip": "185.220.101.5", "ip": "185.220.101.5", "country": "Germany", "lat": 52.52, "lon": 13.405, "event_count": 142, "protocols": ["ssh", "http"]},
+    {"source_ip": "45.154.255.88", "ip": "45.154.255.88", "country": "Netherlands", "lat": 52.367, "lon": 4.904, "event_count": 98, "protocols": ["ssh"]},
+    {"source_ip": "194.26.29.112", "ip": "194.26.29.112", "country": "Russia", "lat": 55.755, "lon": 37.617, "event_count": 87, "protocols": ["http", "ftp"]},
+    {"source_ip": "103.149.28.14", "ip": "103.149.28.14", "country": "India", "lat": 28.613, "lon": 77.209, "event_count": 64, "protocols": ["ssh"]},
+    {"source_ip": "198.51.100.22", "ip": "198.51.100.22", "country": "United States", "lat": 37.774, "lon": -122.419, "event_count": 55, "protocols": ["http"]},
+    {"source_ip": "141.98.11.90", "ip": "141.98.11.90", "country": "Bulgaria", "lat": 42.697, "lon": 23.321, "event_count": 41, "protocols": ["ftp"]},
 ]
 
 SAMPLE_IOCS = [
