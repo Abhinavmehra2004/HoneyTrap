@@ -385,10 +385,12 @@ class SQLiteStore:
 
         :param ioc: IOC instance or dictionary.
         """
-        if isinstance(ioc, IOC):
+        if hasattr(ioc, "to_dict"):
             data = ioc.to_dict()
-        else:
+        elif isinstance(ioc, dict):
             data = dict(ioc)
+        else:
+            data = getattr(ioc, "__dict__", dict(ioc))
 
         ioc_type = str(data["type"])
         value = str(data["value"])

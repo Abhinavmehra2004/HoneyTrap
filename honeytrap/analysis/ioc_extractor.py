@@ -27,6 +27,17 @@ class ExtractedIOC:
     source_sessions: list[str] = field(default_factory=list)
     context: str = ""
 
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "type": self.type,
+            "value": self.value,
+            "confidence": self.confidence,
+            "first_seen": self.first_seen.isoformat() if isinstance(self.first_seen, datetime) else str(self.first_seen),
+            "last_seen": self.last_seen.isoformat() if isinstance(self.last_seen, datetime) else str(self.last_seen),
+            "source_sessions": self.source_sessions,
+            "context": self.context,
+        }
+
 
 class IOCExtractor:
     """Extracts indicators of compromise from honeypot events."""
