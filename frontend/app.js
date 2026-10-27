@@ -247,12 +247,22 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // 4. Top Attackers
-            const resAttackers = await fetch("/api/attackers?limit=6");
+            const resAttackers = await fetch("/api/attackers?limit=10");
             if (resAttackers.ok) {
                 const attackers = await resAttackers.json();
                 attackersChart.data.labels = attackers.map(a => a.source_ip || a.ip || "Unknown");
                 attackersChart.data.datasets[0].data = attackers.map(a => a.event_count || a.count || 0);
                 attackersChart.update();
+
+                // Plot initial adversary locations onto threat map
+                attackers.forEach(a => {
+                    const geo = a.geo || {};
+                    const lat = geo.lat || a.lat;
+                    const lon = geo.lon || a.lon;
+                    if (lat && lon && (lat !== 0 || lon !== 0)) {
+                        addMapMarker(lat, lon, a.source_ip || a.ip, (a.protocols && a.protocols[0]) || "ssh", geo.country || a.country);
+                    }
+                });
             }
 
             // 5. IOCs
