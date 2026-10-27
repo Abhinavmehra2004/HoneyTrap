@@ -266,7 +266,8 @@ class SSHHoneypot(BaseHoneypot):
             Path(host_key_path).parent.mkdir(parents=True, exist_ok=True)
             if not os.path.exists(host_key_path):
                 key = asyncssh.generate_private_key("ssh-rsa")
-                key.write_private_key_file(host_key_path)
+                with open(host_key_path, "wb") as f:
+                    f.write(key.export_private_key())
 
             hp = self
 
